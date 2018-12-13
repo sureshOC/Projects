@@ -1,0 +1,305 @@
+#1. Building spotify app
+
+
+##########################################################################
+
+Before building any backend project (like a Spotify-like API), you should first understand how a backend project is designed from scratch. This is the KT (knowledge transfer) mindset you should follow for every project.
+
+Your goal in 2 days is not a full Spotify clone, but a clean backend system with:
+
+User authentication
+JWT security
+Role-based access
+PostgreSQL database
+FastAPI APIs
+
+Think of it like Spotify backend basics.
+
+🧠 First Understand the Backend Architecture
+Before writing code, always think in this order:
+
+Client (Frontend / Postman)
+        ↓
+FastAPI Routes
+        ↓
+Service / Business Logic
+        ↓
+Database Layer
+        ↓
+PostgreSQL
+
+Authentication flow:
+User Login
+   ↓
+Verify Password (bcrypt)
+   ↓
+Generate JWT
+   ↓
+Send Token
+   ↓
+User uses token for APIs
+
+Role-based flow:
+JWT → extract role → check permission → allow / deny API
+🧱 Technologies You Will Use
+
+Backend framework
+→ FastAPI
+
+Database
+→ PostgreSQL
+
+Database container
+→ Docker
+
+Password hashing
+→ bcrypt
+
+JWT library
+→ python-jose or PyJWT
+
+ORM
+→ SQLAlchemy
+
+📂 Recommended Project Structure
+
+Always organize backend projects like this.
+
+spotify_backend/
+
+app/
+ ├── main.py
+ ├── database.py
+ ├── models.py
+ ├── schemas.py
+ ├── auth.py
+ ├── routes/
+ │     ├── auth_routes.py
+ │     ├── user_routes.py
+ │     └── song_routes.py
+ ├── services/
+ │     └── auth_service.py
+ └── utils/
+       ├── hash.py
+       └── jwt_handler.py
+
+docker-compose.yml
+requirements.txt
+
+
+Why this matters:
+
+Easy to scale
+Easy to test
+Industry standard structure
+
+⚙️ Step 1 — Setup PostgreSQL using Docker
+
+Run database first.
+Example docker-compose:
+
+version: "3"
+services:
+  postgres:
+    image: postgres
+    container_name: spotify_db
+    environment:
+      POSTGRES_USER: spotify
+      POSTGRES_PASSWORD: spotify123
+      POSTGRES_DB: spotify_db
+    ports:
+      - "5432:5432"
+
+Run:
+docker compose up -d
+
+# psql -h localhost -U spotify -d spotify_db # password: spotify123
+
+Now DB is ready.
+
+⚙️ Step 2 — Create FastAPI Project
+
+Install dependencies:
+
+pip install fastapi uvicorn sqlalchemy psycopg2-binary python-jose bcrypt passlib
+
+Start server:
+
+uvicorn app.main:app --reload
+⚙️ Step 3 — Database Models
+
+Basic tables:
+
+Users
+id
+email
+password_hash
+role
+created_at
+Songs
+id
+title
+artist
+created_by
+
+Roles:
+
+admin
+artist
+listener
+🔐 Step 4 — Password Hashing
+
+Use bcrypt.
+
+Flow:
+
+User registers
+   ↓
+Password hashed
+   ↓
+Stored in database
+
+Verification:
+
+Login request
+   ↓
+Compare password with hash
+   ↓
+Allow login
+🔑 Step 5 — JWT Authentication
+
+When user logs in:
+
+Server creates JWT:
+
+payload = {
+ "user_id": 1,
+ "role": "admin",
+ "exp": expiry_time
+}
+
+User sends token in API:
+
+Authorization: Bearer <token>
+
+Server verifies token before accessing route.
+
+🛂 Step 6 — Role-Based Access
+
+Example:
+
+admin → upload songs
+artist → upload own songs
+listener → play songs
+
+FastAPI dependency checks role.
+
+Example logic:
+
+if user.role != "admin":
+    raise permission denied
+🎵 Example APIs for Your Spotify Backend
+
+Authentication
+
+POST /register
+POST /login
+
+User
+
+GET /profile
+
+Songs
+
+POST /songs   (admin/artist)
+GET /songs    (all users)
+DELETE /songs (admin only)
+🗓️ 2-Day Development Plan
+🟢 Day 1
+
+Focus on authentication system
+
+1️⃣ Setup project structure
+2️⃣ Setup PostgreSQL with Docker
+3️⃣ Connect FastAPI to DB
+4️⃣ Create user model
+5️⃣ Implement password hashing
+6️⃣ Implement register API
+7️⃣ Implement login API
+8️⃣ Generate JWT
+
+By end of Day 1:
+
+User Register
+User Login
+JWT Token Generated
+🔵 Day 2
+
+Focus on authorization and songs
+
+1️⃣ Implement JWT middleware
+2️⃣ Create protected routes
+3️⃣ Implement role-based access
+4️⃣ Create song model
+5️⃣ Create song APIs
+6️⃣ Test APIs in Postman
+
+By end of Day 2:
+
+Login
+JWT authentication
+Role-based API access
+PostgreSQL storage
+🧠 Important Mindset (KT)
+
+Before starting any backend project ask:
+
+1️⃣ What entities exist?
+
+Example:
+
+User
+Song
+Playlist
+2️⃣ What roles exist?
+Admin
+Artist
+Listener
+3️⃣ What APIs needed?
+Register
+Login
+Upload song
+Play song
+4️⃣ What security needed?
+Password hashing
+JWT
+Role based access
+🚀 What This Project Teaches You
+
+This small project teaches real backend fundamentals:
+
+Authentication
+
+Authorization
+
+JWT
+
+Database design
+
+Docker
+
+API design
+
+Clean architecture
+
+These are exactly what product companies test.
+
+✅ Next you can ask me things like:
+
+“Design the DB schema for Spotify app”
+
+“Explain JWT flow in FastAPI”
+
+“How to implement role-based access”
+
+“How to write the first FastAPI auth code”

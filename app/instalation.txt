@@ -1,0 +1,61 @@
+##########################################################################
+1. Create  virtual environment
+##########################################################################
+python3 -m venv venv
+source venv/bin/activate
+
+pip3 install fastapi uvicorn sqlalchemy psycopg2-binary python-jose bcrypt passlib
+pip3 install sqlalchemy psycopg2-binary python-dotenv
+
+pip3 freeze > requirements.txt
+
+##########################################################################
+2. Setup spotify_db
+##########################################################################
+Create docker-compose.yaml
+
+Run:
+docker compose up -d
+
+##########################################################################
+3. Create directory structure
+##########################################################################
+
+Always organize backend projects like this.
+
+spotify_backend/
+
+app/
+ ├── main.py
+ ├── database.py
+ ├── models.py
+ ├── schemas.py
+ ├── auth.py
+ ├── routes/
+ │     ├── auth_routes.py
+ │     ├── user_routes.py
+ │     └── song_routes.py
+ ├── services/
+ │     └── auth_service.py
+ └── utils/
+       ├── hash.py
+       └── jwt_handler.py
+
+docker-compose.yml
+requirements.txt
+
+##########################################################################
+Create .env 
+##########################################################################
+# postgresql://USER:PASSWORD@HOST:PORT/DB_NAME
+#psql -h localhost -U spotify -d spotify_db
+export DATABASE_URL="postgresql://spotify:<password>@localhost:5432/spotify_db"
+
+# pip3 uninstall bcrypt
+# pip3 install bcrypt==3.1.7
+# pip3 install python-jose
+
+##########################################################################
+# Run application
+##########################################################################
+uvicorn app.main:app --reload
