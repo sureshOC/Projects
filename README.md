@@ -1,4 +1,3 @@
 # Projects
-This Project Rep is for better understand of github
-This is only for exploring new things
-
+Backend Devlopement Projects.
+1. User Authentication + JWT + RBAC + DB
